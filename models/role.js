@@ -8,7 +8,7 @@ const Role=new mongoose.Schema({
     },
     scopes:{
         type: Array,
-        required: true
+        required: true,
     },
     created:{
         type: Date,

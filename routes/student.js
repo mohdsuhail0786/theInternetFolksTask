@@ -15,10 +15,26 @@ router.post('/student',verify,(req,res)=>{
     .then((result)=>{
         logger.debug('Data fetched successfully')
         if(result.length){
-            return Student.create({name,userId,schoolId})
+            return User.findById(userId)
         }
         else{
             return Promise.reject(new Error('access-denied, not allowed to perform this action'))
+        }
+    })
+    .then((user)=>{
+        if(user){
+            return School.findById(schoolId)
+        }
+        else{
+            return Promise.reject(new Error('User not found'))
+        }
+    })
+    .then((school)=>{
+        if(school){
+            return Student.create({name,userId,schoolId})
+        }
+        else{
+            return Promise.reject(new Error('school not found'))
         }
     })
     .then((response)=>{
