@@ -15,11 +15,11 @@ const verify=(req,res,next)=>{
         })
         .catch((err)=>{
             logger.debug(`Error :: ${err.message}`)
-            res.status(HttpStatus.BAD_REQUEST).json(apiUtils.getResponse('false',{error:err.message}))
+            res.status(HttpStatus.BAD_REQUEST).json(apiUtils.getResponse('false',{errors:[{message:err.message}]}))
         })
     }
     else{
-        res.status(HttpStatus.BAD_REQUEST).json(apiUtils.getResponse('false',{error:'token not found'}))
+        res.status(HttpStatus.BAD_REQUEST).json(apiUtils.getResponse('false',{errors:[{message:'token not found'}]}))
     }
 }
 
