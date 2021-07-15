@@ -1,6 +1,7 @@
 const router=require('express').Router();
 const Student=require('../models/student')
 const User=require('../models/user')
+const School=require('../models/school')
 const apiUtils=require('../utils/apiUtils')
 const logger=require('../utils/logger')
 const HttpStatus=require('http-status-codes');

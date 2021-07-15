@@ -1,6 +1,7 @@
 require('dotenv').config();
 const HttpStatus = require('http-status-codes')
-const apiUtils = require('../utils/apiUtils')
+const apiUtils = require('../utils/apiUtils');
+const logger = require('../utils/logger');
 
 
 const verify=(req,res,next)=>{
