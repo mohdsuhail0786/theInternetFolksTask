@@ -4,12 +4,23 @@ const Student=require('../models/student')
 const apiUtils=require('../utils/apiUtils')
 const logger=require('../utils/logger')
 const HttpStatus=require('http-status-codes');
-const student = require('../models/student');
+const User=require('../models/user');
+const verify = require('../middlewares/verify');
+const mongoose= require('mongoose')
 
-router.post('/school',(req,res)=>{
+router.post('/school',verify,(req,res)=>{
     logger.debug('inside add school api')
     const {name,city,state,country} = req.body
-    School.create({name,city,state,country})
+    const userId=req.user.userId;
+    User.aggregate([{$match:{_id:mongoose.Types.ObjectId(userId)}},{$lookup:{from:"roles",localField:"roleId",foreignField:"_id",as:"roles"}},{$match:{"roles.scopes":{$in:["school-create"]}}}])
+    .then((result)=>{
+        if(result.length){
+            return School.create({name,city,state,country})
+        }
+        else{
+            return Promise.reject(new Error('access-denied, not allowed to perform this action'))
+        }
+    })
     .then((response)=>{
         logger.debug('School registered successfully');
         res.status(HttpStatus.OK).json(apiUtils.getResponse('true',{data:response}))
@@ -20,48 +31,43 @@ router.post('/school',(req,res)=>{
     })
 })
 
-router.get('/school',(req,res)=>{
+router.get('/school',verify,(req,res)=>{
     logger.debug('inside get all schools api')
-    try{
-        School.find()
-        .then((response)=>{
-            logger.debug('Data fetched successfully')
-            res.status(HttpStatus.OK).json(apiUtils.getResponse('true',{data:response}))
-        })
-        .catch((err)=>{
-            logger.debug(`Error :: ${err.message}`)
-            res.status(HttpStatus.BAD_REQUEST).json(apiUtils.getResponse('false',{error:err.message}))
-        })
-    }
-    catch(expection){
-        logger.debug('Exception Occured')
-        res.status(HttpStatus.BAD_REQUEST).json(exception)
-    }
-})
-
-router.get('/school/students',(req,res)=>{
-    logger.debug('inside get all students of all schools')
-    let schools;
-    School.find()
+    const userId=req.user.userId;
+    User.aggregate([{$match:{_id:mongoose.Types.ObjectId(userId)}},{$lookup:{from:"roles",localField:"roleId",foreignField:"_id",as:"roles"}},{$match:{"roles.scopes":{$in:["school-get"]}}}])
     .then((result)=>{
         if(result.length){
-            logger.debug('schools fetched')
-            schools=result
-            return Student.find()
+            return School.find()
         }
         else{
-            return Promise.reject(new Error('No school found'))
+            return Promise.reject(new Error('access-denied, not allowed to perform this action'))
         }
     })
-    .then((allStudents)=>{
-        const newArr=schools.map(school => {
-            const {_id,name,city,state,country,created,updated} = school;
-            const obj={_id,name,city,state,country,created,updated};
-            const schoolStudent=allStudents.filter(student=>JSON.stringify(student.schoolId)===JSON.stringify(obj._id))
-            obj.students=schoolStudent
-            return obj;
-        });
-        res.status(HttpStatus.OK).json(apiUtils.getResponse('true',{data:newArr}))
+    .then((response)=>{
+        logger.debug('Data fetched successfully')
+        res.status(HttpStatus.OK).json(apiUtils.getResponse('true',{data:response}))
+    })
+    .catch((err)=>{
+        logger.debug(`Error :: ${err.message}`)
+        res.status(HttpStatus.BAD_REQUEST).json(apiUtils.getResponse('false',{error:err.message}))
+    })
+})
+
+router.get('/school/students',verify,(req,res)=>{
+    logger.debug('inside get all students of all schools')
+    const userId=req.user.userId;
+    User.aggregate([{$match:{_id:mongoose.Types.ObjectId(userId)}},{$lookup:{from:"roles",localField:"roleId",foreignField:"_id",as:"roles"}},{$match:{"roles.scopes":{$in:["school-students"]}}}])
+    .then((result)=>{
+        if(result.length){
+            return School.aggregate([{$lookup:{from:"students",localField:"_id",foreignField:"schoolId",as:"students"}}])
+        }
+        else{
+            return Promise.reject(new Error('access-denied, not allowed to perform this action'))
+        }
+    })
+    .then((result)=>{
+        logger.debug('Schools and students fetched')
+        res.status(HttpStatus.OK).json(apiUtils.getResponse('true',{data:result}))
     })
     .catch((err)=>{
         logger.error(`Error :: ${err.message}`)
