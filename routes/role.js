@@ -13,20 +13,15 @@ router.post('/role',(req,res)=>{
         name:req.body.name,
         scopes:req.body.scopes
     }
-    try{
-        Role.create(obj)
-        .then((response)=>{
-            logger.debug('Role created successfully')
-            res.status(HttpStatus.OK).json(apiUtils.getResponse('true',{data:response}))
-        })
-        .catch((err)=>{
-            logger.debug(`Error :: ${err.message}`)
-            res.status(HttpStatus.BAD_REQUEST).json(apiUtils.getResponse('false',{error:err.message}))
-        })
-    }
-    catch(expection){
-        logger.debug('Exception Occured')
-    }
+    Role.create(obj)
+    .then((response)=>{
+        logger.debug('Role created successfully')
+        res.status(HttpStatus.OK).json(apiUtils.getResponse('true',{data:response}))
+    })
+    .catch((err)=>{
+        logger.debug(`Error :: ${err.message}`)
+        res.status(HttpStatus.BAD_REQUEST).json(apiUtils.getResponse('false',{errors:[{message:err.message}]}))
+    })
 })
 
 router.get('/role',verify,(req,res)=>{
@@ -47,7 +42,7 @@ router.get('/role',verify,(req,res)=>{
     })
     .catch((err)=>{
         logger.debug(`Error :: ${err.message}`)
-        res.status(HttpStatus.BAD_REQUEST).json(apiUtils.getResponse('false',{error:err.message}))
+        res.status(HttpStatus.BAD_REQUEST).json(apiUtils.getResponse('false',{errors:[{message:err.message}]}))
     })
 })
 

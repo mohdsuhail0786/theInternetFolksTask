@@ -27,7 +27,7 @@ router.post('/school',verify,(req,res)=>{
     })
     .catch((err)=>{
         logger.debug(`Error :: ${err.message}`)
-        res.status(HttpStatus.BAD_REQUEST).json(apiUtils.getResponse('false',{error:err.message}))
+        res.status(HttpStatus.BAD_REQUEST).json(apiUtils.getResponse('false',{errors:[{message:err.message}]}))
     })
 })
 
@@ -49,7 +49,7 @@ router.get('/school',verify,(req,res)=>{
     })
     .catch((err)=>{
         logger.debug(`Error :: ${err.message}`)
-        res.status(HttpStatus.BAD_REQUEST).json(apiUtils.getResponse('false',{error:err.message}))
+        res.status(HttpStatus.BAD_REQUEST).json(apiUtils.getResponse('false',{errors:[{message:err.message}]}))
     })
 })
 
@@ -71,7 +71,7 @@ router.get('/school/students',verify,(req,res)=>{
     })
     .catch((err)=>{
         logger.error(`Error :: ${err.message}`)
-        res.status(HttpStatus.BAD_REQUEST).json(apiUtils.getResponse('false',{error:err.message}))
+        res.status(HttpStatus.BAD_REQUEST).json(apiUtils.getResponse('false',{errors:[{message:err.message}]}))
     })
 })
 

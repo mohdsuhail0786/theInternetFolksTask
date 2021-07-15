@@ -32,7 +32,7 @@ router.post('/user/signup',(req,res)=>{
         })
         .catch((err)=>{
             logger.debug(`Error :: ${err.message}`)
-            res.status(HttpStatus.BAD_REQUEST).json(apiUtils.getResponse('false',{error:err.message}))
+            res.status(HttpStatus.BAD_REQUEST).json(apiUtils.getResponse('false',{errors:[{message:err.message}]}))
         })
     }
     catch(exception){
@@ -68,7 +68,7 @@ router.post('/user/signin',(req,res)=>{
     })
     .catch((err)=>{
         logger.debug(`Error :: ${err.message}`)
-        res.status(HttpStatus.BAD_REQUEST).json(apiUtils.getResponse('false',{error:err.message}))
+        res.status(HttpStatus.BAD_REQUEST).json(apiUtils.getResponse('false',{errors:[{message:err.message}]}))
     })
 })
 
@@ -90,7 +90,7 @@ router.get('/user',verify,(req,res)=>{
     })
     .catch((err)=>{
         logger.debug(`Error :: ${err.message}`)
-        res.status(HttpStatus.BAD_REQUEST).json(apiUtils.getResponse('false',{error:err.message}))
+        res.status(HttpStatus.BAD_REQUEST).json(apiUtils.getResponse('false',{errors:[{message:err.message}]}))
     })
 })
 
@@ -113,7 +113,7 @@ router.get('/user/:userId',verify,(req,res)=>{
     })
     .catch((err)=>{
         logger.debug(`Error :: ${err.message}`)
-        res.status(HttpStatus.BAD_REQUEST).json(apiUtils.getResponse('false',{error:err.message}))
+        res.status(HttpStatus.BAD_REQUEST).json(apiUtils.getResponse('false',{errors:[{message:err.message}]}))
     })
 })
 
